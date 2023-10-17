@@ -1,21 +1,21 @@
-import { kcContext } from "./kcContext";
+import {kcContext} from "./kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
     updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
-import { capitalize } from "tsafe/capitalize";
+import {capitalize} from "tsafe/capitalize";
 
-export const { foo, addFooToQueryParams } = (() => {
+export const {foo, addFooToQueryParams} = (() => {
     const queryParamName = "foo";
 
-    type Type = { foo: number; };
+    type Type = {foo: number;};
 
-    const value = (()=> {
+    const value = (() => {
 
-        const unparsedValue = read({ queryParamName });
+        const unparsedValue = read({queryParamName});
 
-        if( unparsedValue === undefined ){
+        if (unparsedValue === undefined) {
             return undefined;
         }
 
@@ -27,7 +27,7 @@ export const { foo, addFooToQueryParams } = (() => {
         url: string;
         value: Type;
     }): string {
-        const { url, value } = params;
+        const {url, value} = params;
 
         return addParamToUrl({
             url,
@@ -44,16 +44,16 @@ export const { foo, addFooToQueryParams } = (() => {
     return out;
 })();
 
-export const { bar, addBarToQueryParams } = (() => {
+export const {bar, addBarToQueryParams} = (() => {
     const queryParamName = "bar";
 
     type Type = string;
 
-    const value = (()=> {
+    const value = (() => {
 
-        const unparsedValue = read({ queryParamName });
+        const unparsedValue = read({queryParamName});
 
-        if( unparsedValue === undefined ){
+        if (unparsedValue === undefined) {
             return undefined;
         }
 
@@ -65,7 +65,7 @@ export const { bar, addBarToQueryParams } = (() => {
         url: string;
         value: Type;
     }): string {
-        const { url, value } = params;
+        const {url, value} = params;
 
         return addParamToUrl({
             url,
@@ -78,18 +78,17 @@ export const { bar, addBarToQueryParams } = (() => {
         [queryParamName]: value,
         [`add${capitalize(queryParamName)}ToQueryParams` as const]: addToUrlQueryParams
     } as const;
-
     return out;
 })();
 
 
-function read(params: { queryParamName: string }): string | undefined {
+function read(params: {queryParamName: string}): string | undefined {
     if (kcContext === undefined || process.env.NODE_ENV !== "production") {
         //NOTE: We do something only if we are really in Keycloak
         return undefined;
     }
 
-    const { queryParamName } = params;
+    const {queryParamName} = params;
 
     read_from_url: {
         const result = retrieveParamFromUrl({
@@ -101,18 +100,20 @@ function read(params: { queryParamName: string }): string | undefined {
             break read_from_url;
         }
 
-        const { newUrl, value: serializedValue } = result;
+        const {newUrl, value: serializedValue} = result;
 
         updateSearchBarUrl(newUrl);
 
         localStorage.setItem(queryParamName, serializedValue);
-
+        console.log(queryParamName, serializedValue);
         return serializedValue;
     }
 
     //Reading from local storage
     const serializedValue = localStorage.getItem(queryParamName);
 
+
+    console.log(serializedValue);
     if (serializedValue === null) {
         throw new Error(
             `Missing ${queryParamName} in URL when redirecting to login page`
